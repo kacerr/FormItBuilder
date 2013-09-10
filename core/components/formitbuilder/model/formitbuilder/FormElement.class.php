@@ -107,6 +107,10 @@ abstract class FormItBuilder_element extends FormItBuilder_baseElement{
 	/**
 	 * @ignore
 	 */
+	protected $_inputExtraClasses;
+	/**
+	 * @ignore
+	 */
 	protected $_labelAfterElement;
 
 	/**
@@ -169,6 +173,13 @@ abstract class FormItBuilder_element extends FormItBuilder_baseElement{
 	 */
 	public function getExtraClasses() { return $this->_extraClasses; }
 	/**
+	 * getInputExtraClasses()
+	 * 
+	 * Returns the array of extra classes applied just to the input element.
+	 * @return array
+	 */
+	public function getInputExtraClasses() { return $this->_inputExtraClasses; }
+	/**
 	 * getLabelAfterElement()
 	 * 
 	 * Returns a boolean indicating if an element will output label HTML before (false) or after (true) the element.
@@ -213,6 +224,14 @@ abstract class FormItBuilder_element extends FormItBuilder_baseElement{
 	 */
 	public function setExtraClasses($value) { $this->_extraClasses = self::forceArray($value); }
 	
+	/**
+	 * setInputExtraClasses($value)
+	 * 
+	 * Allows you to add your own classes right to the input element
+	 * @param array $value An array of class strings.
+	 */
+	public function setInputExtraClasses($value) { $this->_inputExtraClasses = self::forceArray($value); }	
+
 	/**
 	 * setLabelAfterElement($value)
 	 * 
@@ -542,6 +561,8 @@ class FormItBuilder_elementButton extends FormItBuilder_element{
 	 * @return string 
 	 */
 	public function outputHTML(){
+		if (is_array($this->_inputExtraClasses)) $a_classes=array_merge($this->_inputExtraClasses, array());
+		else $a_classes=array();
 		$s_ret='<input id="'.htmlspecialchars($this->_id).'" type="'.htmlspecialchars($this->_type).'" value="'.htmlspecialchars($this->_label).'"';
 		if($this->_type=='image'){
 			if($this->_src===NULL){
@@ -549,6 +570,9 @@ class FormItBuilder_elementButton extends FormItBuilder_element{
 			}else{
 				$s_ret.=' src="'.htmlspecialchars($this->_src).'"';
 			}
+		}
+		if(count($a_classes)>0){
+			$s_ret.=' class="'.implode(' ',$a_classes).'"';
 		}
 		$s_ret.=' />';
 		return $s_ret;
@@ -840,6 +864,9 @@ class FormItBuilder_elementTextArea extends FormItBuilder_element{
 		}else{
 			$selectedStr=htmlspecialchars($this->_defaultVal);
 		}
+
+		if (is_array($this->_inputExtraClasses)) $a_classes=array_merge($this->_inputExtraClasses, array());
+		else $a_classes=array();
 		if($this->_required===true){
 			$a_classes[]='required'; // for jquery validate (or for custom CSSing :) )
 		}
@@ -1107,6 +1134,10 @@ class FormItBuilder_elementText extends FormItBuilder_element{
 	 * @ignore
 	 */
 	protected $_placeholder;
+	/**
+	 * @ignore
+	 */
+	protected $_inputExtraClasses;
 
 	/**
 	 * FormItBuilder_elementText
@@ -1162,7 +1193,6 @@ class FormItBuilder_elementText extends FormItBuilder_element{
 	 * @return string
 	 */
 	public function getDateFormat() { return $this->_dateFormat; }
-	
 	/**
 	 * setMaxLength($value)
 	 * 
@@ -1249,7 +1279,8 @@ class FormItBuilder_elementText extends FormItBuilder_element{
 	 * @return string 
 	 */
 	public function outputHTML(){
-		$a_classes=array();
+		if (is_array($this->_inputExtraClasses)) $a_classes=array_merge($this->_inputExtraClasses, array());
+		else $a_classes=array();
 		
 		//hidden field with same name is so we get a post value regardless of tick status
 		if(isset($_POST[$this->_id])===true){
